@@ -14,4 +14,3 @@ print("Radius of the said circle:")
 print("{:>.3f}".format(r))
 print("Central coordinate (x, y) of the circle:")
 print("{:>.3f}".format(px),"{:>.3f}".format(py))
-9
