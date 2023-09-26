@@ -13,7 +13,7 @@ ms = {
     '12' : 'December'
 }
 a = input("Input the month (e.g. [1-12]):")
-m = int(a);
+m = int(a)
 if m > 2 and m < 6: st = 'spring'
 elif m > 5 and m < 9: st = "summer"
 elif m > 8 and m < 12: st = 'autumn'

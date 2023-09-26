@@ -4,6 +4,6 @@ while True:
     if elems:
         l.append(elems.lower())
     else:
-        break;
+        break
 print(l)
 	
