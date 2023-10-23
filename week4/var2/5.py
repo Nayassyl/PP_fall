@@ -13,5 +13,5 @@ def make_pairr(a, b):
             listt.append((a[i], b[i]))
     return set(listt)
 list1 = [2,3,4,5,6,7,8]
-list2 = [4,9,16,25,36,49,64]
+list2 = [4,9,16,25,36,49,64,89,47]
 print(make_pairr(list1, list2))
