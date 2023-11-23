@@ -93,18 +93,19 @@ wind1.title('Main window')
 def toRegForm():
     wind2 = Tk()
     wind2.geometry('400x150')
-    wind2.title = ('Login Form')
+    wind2.title = ('Registration Form')
     usernameLabel = Label(wind2, text="User Name").grid(row=0, column=0)
     username = StringVar()
     usernameEntry = Entry(wind2, textvariable=username).grid(row=0, column=1)  
     userr = username.get()
+    
     
     passwordLabel = Label(wind2,text="Password").grid(row=1, column=0)  
     password = StringVar()
     passwordEntry = Entry(wind2, textvariable=password, show='*').grid(row=1, column=1)  
     passw = password.get()
     
-    loginButton = Button(wind2, text="Login", command=lambda: Sing_in(userr, passw)).grid(row=4, column=0)
+    RegButton = Button(wind2, text="Registration", command=lambda: Sing_in(userr, passw)).grid(row=4, column=0)
     
 
     
