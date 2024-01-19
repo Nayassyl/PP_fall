@@ -1,3 +1,4 @@
+
 class Matrix:
     #initialize matrix with specified dimensions and optional initial elements
     def __init__(self, rows, cols, elements=None):
@@ -10,7 +11,7 @@ class Matrix:
             self.data = [elements[i * cols:(i + 1) * cols] for i in range(rows)]
         else:
             #if no initial elements, initialize the matrix with zeros
-            self.data = [[0] * cols for _ in range(rows)]
+            self.data = [[0.0] * cols for _ in range(rows)]
 
     def __repr__(self):
         #provide a string representation of the matrix for printing
@@ -139,7 +140,7 @@ class Matrix:
             
             #lower triangular matrix (L)
             #diagonal elements of L are always 1
-            L.data[i][i] = 1
+            L.data[i][i] = 1.0
             for j in range(i + 1, self.rows):
                 #L[j][i] is element at row j, column i in lower triangular matrix
                 #subtract sum of products of corresponding elements from L and U
@@ -238,27 +239,186 @@ class Matrix:
                         factor = matrix_copy.data[j][i]
                         matrix_copy.data[j] = [element - factor * matrix_copy.data[i][idx] for idx, element in enumerate(matrix_copy.data[j])]
             return matrix_copy
-    
 
 
 
+import tkinter as tk
+from tkinter import ttk, messagebox, scrolledtext
 
+class MatrixApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Ultimate calculator")
 
+        # Create tabs for matrix operations
+        self.tabs = ttk.Notebook(root)
+        self.tabs.pack(fill=tk.BOTH, expand=True)
 
+        # Create two frames for matrix operations
+        self.matrix_operations_frame = ttk.Frame(self.tabs)
+        self.two_matrix_operations_frame = ttk.Frame(self.tabs)
 
+        # Add tabs
+        self.tabs.add(self.matrix_operations_frame, text="Ultimate Matrix Operations")
+        self.tabs.add(self.two_matrix_operations_frame, text="Ultimate Two Matrix Operations")
 
-#test
-m = Matrix(3, 3, [1, 2, 3,
-                  4, 5, 6,
-                  7, 8, 9])
-m1 = Matrix(3,3,[1,0,2,
-                 0,2,0,
-                 0,-1,1])
-m2 = Matrix(4,4,[52,30,49,28,
-                 30,50,8,44,
-                 49,8,46,16,
-                 28,44,16,22])
-eigenvalues, eigenvectors = m2.qr_iteration_with_eigenvectors()
-print("Eigenvalues:", eigenvalues)
-print("Eigenvectors:")
-print(eigenvectors)
+        # Initialize matrix dimensions for the first section
+        self.rows_var = tk.IntVar(value=3)
+        self.cols_var = tk.IntVar(value=3)
+
+        # Initialize matrix dimensions for the second section
+        self.rows_var_a = tk.IntVar(value=3)
+        self.cols_var_a = tk.IntVar(value=3)
+        self.rows_var_b = tk.IntVar(value=3)
+        self.cols_var_b = tk.IntVar(value=3)
+
+        # Matrix Operations Frame
+        self.create_matrix_operations_frame()
+
+        # Two Matrix Operations Frame
+        self.create_two_matrix_operations_frame()
+
+    def create_matrix_operations_frame(self):
+        frame = self.matrix_operations_frame
+
+        # Matrix Dimensions
+        dimensions_frame = ttk.Frame(frame)
+        dimensions_frame.pack(pady=10)
+        ttk.Label(dimensions_frame, text="Rows:").grid(row=0, column=0)
+        ttk.Spinbox(dimensions_frame, from_=1, to=10, textvariable=self.rows_var).grid(row=0, column=1)
+        ttk.Label(dimensions_frame, text="Cols:").grid(row=0, column=2)
+        ttk.Spinbox(dimensions_frame, from_=1, to=10, textvariable=self.cols_var).grid(row=0, column=3)
+
+        # Matrix Entries
+        matrix_entries_frame = ttk.Frame(frame)
+        matrix_entries_frame.pack(pady=10)
+        ttk.Label(matrix_entries_frame, text="Matrix A:").grid(row=0, column=0)
+        matrix_a_entry = scrolledtext.ScrolledText(matrix_entries_frame, height=5, width=20)
+        matrix_a_entry.grid(row=0, column=1, padx=5)
+
+        # Result Textbox
+        result_text = scrolledtext.ScrolledText(frame, height=10, width=60, wrap=tk.WORD)
+        result_text.pack(pady=10)
+
+        # Matrix Operations Buttons
+        operations_frame = ttk.Frame(frame)
+        operations_frame.pack(pady=10)
+
+        def perform_operation(operation):
+            try:
+                rows = self.rows_var.get()
+                cols = self.cols_var.get()
+
+                matrix_a_elements = [float(val) for val in matrix_a_entry.get(1.0, tk.END).split()]
+
+                matrix_a = Matrix(rows, cols, matrix_a_elements)
+
+                if operation == "Transpose":
+                    result_matrix = matrix_a.transpose()
+                elif operation == "Determinant":
+                    result_matrix = matrix_a.determinant()
+                elif operation == "Inverse":
+                    result_matrix = matrix_a.inverse_matrix()
+                elif operation == "QR Decomposition":
+                    Q, R = matrix_a.qr_decomposition()
+                    result_matrix = f"Q:\n{Q}\n\nR:\n{R}"
+                elif operation == "LU Decomposition":
+                    L, U = matrix_a.lu_decomposition()
+                    result_matrix = f"L:\n{L}\n\nU:\n{U}"
+                elif operation == "Gram-Schmidt":
+                    result_matrix = matrix_a.gram_schmidt()
+                elif operation == "Eigenvalues/Eigenvectors":
+                    eigenvalues, eigenvectors = matrix_a.qr_iteration_with_eigenvectors()
+                    result_matrix = f"Eigenvalues: {eigenvalues}\n\nEigenvectors:\n{eigenvectors}"
+                elif operation == "Gaussian Elimination":
+                    result_matrix = matrix_a.gaussian_elimination()
+
+                result_text.delete(1.0, tk.END)
+                result_text.insert(tk.END, result_matrix)
+
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
+
+        operations = [
+            "Transpose", "Determinant", "Inverse", "QR Decomposition",
+            "LU Decomposition", "Gram-Schmidt", "Eigenvalues/Eigenvectors", "Gaussian Elimination"
+        ]
+
+        for operation in operations:
+            ttk.Button(operations_frame, text=operation, command=lambda op=operation: perform_operation(op)).pack(side=tk.LEFT, padx=5)
+
+    def create_two_matrix_operations_frame(self):
+        frame = self.two_matrix_operations_frame
+
+        # Matrix A Dimensions
+        dimensions_frame_a = ttk.Frame(frame)
+        dimensions_frame_a.pack(pady=10)
+        ttk.Label(dimensions_frame_a, text="Rows A:").grid(row=0, column=0)
+        ttk.Spinbox(dimensions_frame_a, from_=1, to=10, textvariable=self.rows_var_a).grid(row=0, column=1)
+        ttk.Label(dimensions_frame_a, text="Cols A:").grid(row=0, column=2)
+        ttk.Spinbox(dimensions_frame_a, from_=1, to=10, textvariable=self.cols_var_a).grid(row=0, column=3)
+
+        # Matrix B Dimensions
+        dimensions_frame_b = ttk.Frame(frame)
+        dimensions_frame_b.pack(pady=10)
+        ttk.Label(dimensions_frame_b, text="Rows B:").grid(row=0, column=0)
+        ttk.Spinbox(dimensions_frame_b, from_=1, to=10, textvariable=self.rows_var_b).grid(row=0, column=1)
+        ttk.Label(dimensions_frame_b, text="Cols B:").grid(row=0, column=2)
+        ttk.Spinbox(dimensions_frame_b, from_=1, to=10, textvariable=self.cols_var_b).grid(row=0, column=3)
+
+        # Matrix Entries
+        matrix_entries_frame = ttk.Frame(frame)
+        matrix_entries_frame.pack(pady=10)
+        ttk.Label(matrix_entries_frame, text="Matrix A:").grid(row=0, column=0)
+        matrix_a_entry = tk.Text(matrix_entries_frame, height=5, width=20)
+        matrix_a_entry.grid(row=0, column=1, padx=5)
+        ttk.Label(matrix_entries_frame, text="Matrix B:").grid(row=0, column=2)
+        matrix_b_entry = tk.Text(matrix_entries_frame, height=5, width=20)
+        matrix_b_entry.grid(row=0, column=3, padx=5)
+
+        # Result Textbox
+        result_text = scrolledtext.ScrolledText(frame, height=10, width=60, wrap=tk.WORD)
+        result_text.pack(pady=10)
+
+        # Matrix Operations Buttons
+        operations_frame = ttk.Frame(frame)
+        operations_frame.pack(pady=10)
+
+        def perform_operation(operation):
+            try:
+                rows_a = self.rows_var_a.get()
+                cols_a = self.cols_var_a.get()
+
+                rows_b = self.rows_var_b.get()
+                cols_b = self.cols_var_b.get()
+
+                matrix_a_elements = [float(val) for val in matrix_a_entry.get(1.0, tk.END).split()]
+                matrix_b_elements = [float(val) for val in matrix_b_entry.get(1.0, tk.END).split()]
+
+                matrix_a = Matrix(rows_a, cols_a, matrix_a_elements)
+                matrix_b = Matrix(rows_b, cols_b, matrix_b_elements)
+
+                if operation == "Add":
+                    result_matrix = matrix_a + matrix_b
+                elif operation == "Subtract":
+                    result_matrix = matrix_a - matrix_b
+                elif operation == "Multiply":
+                    result_matrix = matrix_a * matrix_b
+
+                result_text.delete(1.0, tk.END)
+                result_text.insert(tk.END, result_matrix)
+
+            except Exception as e:
+                messagebox.showerror("Error", str(e))
+
+        operations = ["Add", "Subtract", "Multiply"]
+
+        for operation in operations:
+            ttk.Button(operations_frame, text=operation, command=lambda op=operation: perform_operation(op)).pack(side=tk.LEFT, padx=5)
+
+# Run the application
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MatrixApp(root)
+    root.mainloop()
+
