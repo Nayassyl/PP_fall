@@ -28,7 +28,7 @@ winterx = np.random.uniform(low=0, high=8500, size=num_points)
 wintery = np.random.uniform(low=0.2, high=0.6, size=num_points)
 graph[1][1].scatter(wintery, winterx, c="blue", alpha=0.9, s=10)
 graph[1][1].set_xticks(np.arange(0.2, 0.7, 0.1))
-graph[1][1].set_yticks(np.arange(0,8001,2000))
+graph[1][1].set_yticks(np.arange(0,8001,2000)) 
 
 figure.suptitle("Bike Rentals at Different Temperatures\n By Season",
                 color="black", weight="bold")
